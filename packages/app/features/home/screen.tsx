@@ -1,74 +1,98 @@
-import { Text, useSx, View, H1, P, Row, A } from 'dripsy'
-import { TextLink } from 'solito/link'
-import { MotiLink } from 'solito/moti'
+import {
+  Anchor,
+  Button,
+  H1,
+  Paragraph,
+  Separator,
+  Sheet,
+  useToastController,
+  XStack,
+  YStack,
+} from '@my/ui'
+import { ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
+import { useState } from 'react'
+import { useLink } from 'solito/link'
 
 export function HomeScreen() {
-  const sx = useSx()
+  const linkProps = useLink({
+    href: '/user/nate',
+  })
 
   return (
-    <View
-      sx={{ flex: 1, justifyContent: 'center', alignItems: 'center', p: 16 }}
-    >
-      <H1 sx={{ fontWeight: '800' }}>Welcome to Solito.</H1>
-      <View sx={{ maxWidth: 600 }}>
-        <P sx={{ textAlign: 'center' }}>
-          Here is a basic starter to show you how you can navigate from one
-          screen to another. This screen uses the same code on Next.js and React
-          Native.
-        </P>
-        <P sx={{ textAlign: 'center' }}>
-          Solito is made by{' '}
-          <A
-            href="https://twitter.com/fernandotherojo"
-            hrefAttrs={{
-              target: '_blank',
-              rel: 'noreferrer',
-            }}
-            sx={{ color: 'blue' }}
-          >
-            Fernando Rojo
-          </A>
-          .
-        </P>
-      </View>
-      <View sx={{ height: 32 }} />
-      <Row>
-        <TextLink
-          href="/user/fernando"
-          textProps={{
-            style: sx({ fontSize: 16, fontWeight: 'bold', color: 'blue' }),
-          }}
-        >
-          Regular Link
-        </TextLink>
-        <View sx={{ width: 32 }} />
-        <MotiLink
-          href="/user/fernando"
-          animate={({ hovered, pressed }) => {
-            'worklet'
+    <YStack f={1} jc="center" ai="center" p="$4" gap="$4">
+      <YStack gap="$4" bc="$background">
+        <H1 ta="center">Welcome to Tamagui.</H1>
+        <Paragraph ta="center">
+          Here's a basic starter to show navigating from one screen to another. This screen uses the
+          same code on Next.js and React Native.
+        </Paragraph>
 
-            return {
-              scale: pressed ? 0.95 : hovered ? 1.1 : 1,
-              rotateZ: pressed ? '0deg' : hovered ? '-3deg' : '0deg',
-            }
-          }}
-          from={{
-            scale: 0,
-            rotateZ: '0deg',
-          }}
-          transition={{
-            type: 'timing',
-            duration: 150,
-          }}
-        >
-          <Text
-            selectable={false}
-            sx={{ fontSize: 16, color: 'black', fontWeight: 'bold' }}
+        <Separator />
+        <Paragraph ta="center">
+          Made by{' '}
+          <Anchor color="$color12" href="https://twitter.com/natebirdman" target="_blank">
+            @natebirdman
+          </Anchor>
+          ,{' '}
+          <Anchor
+            color="$color12"
+            href="https://github.com/tamagui/tamagui"
+            target="_blank"
+            rel="noreferrer"
           >
-            Moti Link
-          </Text>
-        </MotiLink>
-      </Row>
-    </View>
+            give it a ⭐️
+          </Anchor>
+        </Paragraph>
+      </YStack>
+
+      <XStack>
+        <Button {...linkProps}>Link to user</Button>
+      </XStack>
+
+      <SheetDemo />
+    </YStack>
+  )
+}
+
+function SheetDemo() {
+  const [open, setOpen] = useState(false)
+  const [position, setPosition] = useState(0)
+  const toast = useToastController()
+
+  return (
+    <>
+      <Button
+        size="$6"
+        icon={open ? ChevronDown : ChevronUp}
+        circular
+        onPress={() => setOpen((x) => !x)}
+      />
+      <Sheet
+        modal
+        animation="medium"
+        open={open}
+        onOpenChange={setOpen}
+        snapPoints={[80]}
+        position={position}
+        onPositionChange={setPosition}
+        dismissOnSnapToBottom
+      >
+        <Sheet.Overlay animation="lazy" enterStyle={{ opacity: 0 }} exitStyle={{ opacity: 0 }} />
+        <Sheet.Frame ai="center" jc="center">
+          <Sheet.Handle />
+          <Button
+            size="$6"
+            circular
+            icon={ChevronDown}
+            onPress={() => {
+              setOpen(false)
+              toast.show('Sheet closed!', {
+                message: 'Just showing how toast works...',
+              })
+            }}
+          />
+        </Sheet.Frame>
+      </Sheet>
+    </>
   )
 }
